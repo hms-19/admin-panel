@@ -47,7 +47,7 @@ const CreateTournaments = () => {
   return (
     <Container maxWidth='100%'>
         <Card sx={{ 
-            marginTop: '24px'
+            marginTop: '6px'
          }}>
           <CardHeader title='Add New Tournament' sx={{ 
             padding: '20px',
@@ -65,9 +65,10 @@ const CreateTournaments = () => {
                     background: 'white',
                     boxShadow: '0px 0px 0.6px rgba(0,0,0,0.4)',
                     borderRadius: '5px',
-                    margin: '0 auto'
+                    margin: '0 auto',
                   }}
                 />
+                <Typography variant='title' component='h5' align='center' sx={{ m: '10px 0 0 0' }}>Upload Image</Typography>
               </Grid>
               
               <Grid item sm={12} md={6}>
