@@ -1,7 +1,9 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 import Layout from '../layouts';
+import CreateTournaments from '../pages/CreateTournaments';
 import Dashboard from '../pages/Dashboard';
-import Table from '../pages/Table';
+import Page404 from '../pages/Page404';
+import Tournaments from '../pages/Tournaments';
 
 // ----------------------------------------------------------------------
 
@@ -12,8 +14,26 @@ export default function Router() {
       element: <Layout />,
       children: [
         { element: <Navigate to="/dashboard" />, index: true },
-        { path: 'dashboard', element: <Dashboard /> },
-        { path: 'table', element: <Table /> },
+        { 
+          path: 'dashboard', 
+          element: <Dashboard /> 
+        },
+        { 
+          path: 'tournaments', 
+          element: <Tournaments />,
+        },
+        {
+          path: '/create-tournaments',
+          element: <CreateTournaments />
+        },
+        { 
+          path: '404', 
+          element: <Page404 /> 
+        },
+        { 
+          path: '*', 
+          element: <Navigate to="/404" /> 
+        },
       ],
     },
     {

@@ -2,31 +2,21 @@ import * as React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import Divider from '@mui/material/Divider';
 import SearchIcon from '@mui/icons-material/Search';
 import { Sidebar } from '../components/Sidebar/Sidebar';
 import { Header } from '../components/Header/Header';
-import Badge from '@mui/material/Badge';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { Outlet } from 'react-router-dom';
-
 import '../components/Header/Header'
 import { Search, SearchIconWrapper, StyledInputBase } from '../components/Header/Search';
 import { Menu, MenuItem } from '@mui/material';
+import HeaderMenu from './HeaderMenu';
+import SidebarList from './SidebarList';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -45,7 +35,7 @@ export default function Layout() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const APP_BAR_MOBILE = 64;
-  const APP_BAR_DESKTOP = 92;
+  const APP_BAR_DESKTOP = 82;
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -77,7 +67,7 @@ export default function Layout() {
     paddingTop: APP_BAR_MOBILE + 24,
     paddingBottom: theme.spacing(10),
     [theme.breakpoints.up('lg')]: {
-      paddingTop: APP_BAR_DESKTOP + 24,
+      paddingTop: APP_BAR_DESKTOP,
       paddingLeft: theme.spacing(0),
       paddingRight: theme.spacing(0),
     },
@@ -104,8 +94,7 @@ export default function Layout() {
         <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
         <MenuItem onClick={handleMenuClose}>My account</MenuItem>
       </Menu>
-  );
-
+  )
 
   return (
     <>
@@ -141,7 +130,7 @@ export default function Layout() {
                   }}
                 >
                   <MenuIcon />
-              </IconButton>
+                </IconButton>
               }
             
 
@@ -167,91 +156,21 @@ export default function Layout() {
               
               <Box sx={{ flexGrow: 1 }} />
               
-              <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <IconButton
-                  size="large"
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge badgeContent={17} color="error">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-                <IconButton
-                  size="large"
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit"
-                >
-                  <AccountCircle />
-                </IconButton>
-              </Box>
+              <HeaderMenu handleProfileMenuOpen={handleProfileMenuOpen} />
                 
             </Toolbar>
           </Header>
           <Sidebar variant="permanent" open={open}>   
-            <DrawerHeader>
-              
-            </DrawerHeader>     
-            <List>
-              {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? 'initial' : 'center',
-                      px: 2.5,
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : 'auto',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-            <Divider />
-            <List>
-              {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? 'initial' : 'center',
-                      px: 2.5,
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : 'auto',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
+            <DrawerHeader></DrawerHeader>     
+            <SidebarList open={open} />
           </Sidebar>
           <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             <DrawerHeader />          
           </Box>
         </Box>
-        {renderMenu}
         <Main>
           <Outlet />
+          {renderMenu}
         </Main>
       </StyledRoot>
     </>

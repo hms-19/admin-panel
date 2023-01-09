@@ -1,0 +1,21 @@
+
+.MuiListItem-root a{
+    text-decoration: none;
+    color: #444;
+}
+
+.css-zxdg2z {
+    padding: 0px !important;
+}
+
+.css-1u3bzj6-MuiFormControl-root-MuiTextField-root {
+    min-width: 100%;
+}
+
+.sc-hLBbgP svg{
+    color: #444 !important;
+}
+
+.MuiGrid-item>div{
+    margin: auto;
+}
