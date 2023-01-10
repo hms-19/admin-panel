@@ -44,7 +44,7 @@ const SidebarList = ({open}) => {
                     >
                     <HomeOutlined />
                     </ListItemIcon>
-                    <ListItemText primary={'Tornements'} sx={{ opacity: open ? 1 : 0 }} />
+                    <ListItemText primary={'Tornaments'} sx={{ opacity: open ? 1 : 0 }} />
                 </ListItemButton>
             </NavLink>
         </ListItem>

@@ -11,15 +11,18 @@ import ThemeProvider from './theme';
 import { store } from './store'
 import { Provider } from 'react-redux'
 import './assets/css/style.css'
+import { HelmetProvider } from 'react-helmet-async';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <Provider store={store}>
-          <App />
-        </Provider>
+        <HelmetProvider>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </HelmetProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>

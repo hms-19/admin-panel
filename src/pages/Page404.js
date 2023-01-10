@@ -1,19 +1,20 @@
 import { Helmet } from 'react-helmet-async';
-import { Link as RouterLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Button, Typography, Container, Box } from '@mui/material';
+import Img404 from '../assets/images/404.webp'
 
 // ----------------------------------------------------------------------
 
 const StyledContent = styled('div')(({ theme }) => ({
-  maxWidth: 480,
+  maxWidth: 500,
   margin: 'auto',
   minHeight: '100vh',
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'column',
-  padding: theme.spacing(12, 0),
+  padding: theme.spacing(2, 0),
 }));
 
 // ----------------------------------------------------------------------
@@ -22,7 +23,7 @@ export default function Page404() {
   return (
     <>
       <Helmet>
-        <title> 404 Page Not Found | Minimal UI </title>
+        <title> 404 Page Not Found </title>
       </Helmet>
 
       <Container>
@@ -38,13 +39,15 @@ export default function Page404() {
 
           <Box
             component="img"
-            src="/assets/illustrations/illustration_404.svg"
-            sx={{ height: 260, mx: 'auto', my: { xs: 5, sm: 10 } }}
+            src={Img404}
+            sx={{ height: 260, mx: 'auto', my: { xs: 2, sm: 5 } }}
           />
 
-          <Button to="/" size="large" variant="contained" component={RouterLink}>
-            Go to Home
-          </Button>
+          <NavLink to='/'>
+            <Button size="large" variant="contained">
+              Go to Home
+            </Button>
+          </NavLink>
         </StyledContent>
       </Container>
     </>
