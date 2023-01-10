@@ -8,3 +8,8 @@ export const createTournaments  = (data) => {
 
     return res
 }
+
+export const apiStatus  = () => {
+    const res = instance.get('/')
+    return res
+}
