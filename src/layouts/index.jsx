@@ -31,7 +31,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export default function Layout() {
   
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const isMenuOpen = Boolean(anchorEl);
   const APP_BAR_MOBILE = 64;
