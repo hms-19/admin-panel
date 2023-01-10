@@ -1,15 +1,15 @@
 import { instance } from "../api";
 
+// Get All Tournaments
 
-// Create Tournaments
-
-export const createTournaments  = (data) => {
-    const res = instance.post('/contests/create_contest',data)
-
+export const fetchTournaments = async (data) => {
+    const res = await instance.post('/contests/all_contest',data)
     return res
 }
 
-export const apiStatus  = () => {
-    const res = instance.get('/')
+// Create Tournaments
+
+export const createTournaments  = async (data) => {
+    const res = await instance.post('/contests/create_contest',data)
     return res
 }

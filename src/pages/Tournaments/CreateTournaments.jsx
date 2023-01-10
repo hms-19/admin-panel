@@ -9,11 +9,13 @@ import 'image-upload-react/dist/index.css'
 import { Add, ClearAll, Delete } from '@mui/icons-material';
 import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
-import { createTournaments } from '../endpoints/tournaments';
+import { createTournaments } from '../../endpoints/tournaments';
 import { Helmet } from 'react-helmet-async';
+import { cleanTourForm } from './tourUtils';
 
 const CreateTournaments = () => {
   
+  //original state
   const [data, setData] = useState({
     game_id : '',
     img_splash : '',
@@ -46,6 +48,7 @@ const CreateTournaments = () => {
     {start_rank: '', end_rank: '', cash_money: '', game_token: ''}
   ])
 
+  // change image to base64
   const handleImageSelect = (e) => {
     let reader = new FileReader();
     reader.readAsDataURL(e.target.files[0]);
@@ -57,62 +60,69 @@ const CreateTournaments = () => {
     };
   }
 
-
+  //prize money add row
   const addFields = () => {
     let newfield = {start_rank: '', end_rank: '', cash_money: '', game_token: ''}
     setPrizeMoney([...prizeMoney, newfield])
   }
 
+  //prize money remove row
   const removeFields = (index) => {
     let field = [...prizeMoney]
     field = field.filter((d,i) => i !== index)
     setPrizeMoney(field)
   }
 
+  //prize money state update
   const handleChange = (index, event) => {
     let prize = [...prizeMoney];
     prize[index][event.target.id] = event.target.value;
     setPrizeMoney(prize);
   }
 
+  // state update
   const EnterTextField = (key, value) => {
     setData({...data, [key]: value})
   }
 
-  const handleFormSubmit = async (type) => {
-    if(type == 'cancel'){
-      setData({
-        game_id : '',
-        img_splash : '',
-        contest_name : '',
-        recurring : false,
-        recurring_duration : 0,
-        recurring_interval : 0,
-        blackout_start : dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ').toString(),
-        blackout_end : dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ').toString(),
-        start_datetime : dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ').toString(),
-        end_datetime : dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ').toString(),
-        entry_fee : 0,
-        entry_currency : 0,
-        foreshadow_duration : 0,
-        notification_duration : 0,
-        notification_segments : 0,
-        hardstop_duration : 0,
-        winning_currency : 0,
-        slots : 0,
-        infinite_play : false,
-        play_limit : 0,
-        winners_percentage : 0,
-        prize_guaranteed : false,
-        game_properties : ''
-      })
+  // request to create
+  const makeTourRequest = async () => {
+    alert()
+    setLoading(true)
+    const res = await createTournaments({
+      access_token: 'test',
+      ...data,
+      prizeMoney
+    })
 
+    if(res?.status !== 0){
+      setLoading(false)
+      Swal.fire({
+        title: 'Warning!',
+        text: res?.message,
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      })
+    }
+    setLoading(false)
+    console.log(res)
+  }
+
+  // handle submit
+  const handleFormSubmit = (type) => {
+
+    // form cancel
+    if(type == 'cancel'){
+      setData(cleanTourForm(data))
       setPrizeMoney([
         {start_rank: '', end_rank: '', cash_money: '', game_token: ''}
       ])
     }
 
+    //form submit
     if(type == 'submit'){
+
+        // all field check
         if(
             data.game_id !== '' && 
             data.img_splash !== '' &&
@@ -126,49 +136,25 @@ const CreateTournaments = () => {
             data.game_properties !== '' &&
             prizeMoney.length !== 0 
           ){
+            // prize money check
             if( prizeMoney[0].start_rank !== '' && 
                 prizeMoney[0].end_rank !== '' &&
                 prizeMoney[0].cash_money !== '' &&
                 prizeMoney[0].game_token !== '' 
             ){
+
+              // infinite check
               if(!data.infinite_play){
                 if(data.play_limit !== 0 && data.play_limit !== ''){
+
+                  //recurring check
                   if(data.recurring){
                     if( data.recurring_duration !== 0 && data.recurring_duration !== '' &&
                         data.recurring_interval !== 0 && data.recurring_interval !== '' &&
                         data.blackout_start !== '' &&
                         data.blackout_end !== '' 
                       ){
-                          setLoading(true)
-                          const res = await createTournaments({
-                            access_token : 'test',
-                            game_id : data.game_id,
-                            img_splash : data.img_splash,
-                            contest_name : data.contest_name,
-                            recurring : data.recurring,
-                            recurring_duration : data.recurring_duration,
-                            recurring_interval : data.recurring_interval,
-                            blackout_start : data.blackout_start,
-                            blackout_end : data.blackout_end,
-                            entry_fee : data.entry_fee,
-                            entry_currency : data.entry_currency,
-                            foreshadow_duration : data.foreshadow_duration,
-                            notification_duration : data.notification_duration,
-                            notification_segments : data.notification_segments,
-                            hardstop_duration : data.hardstop_duration,
-                            winning_currency : data.winning_currency,
-                            slots : data.slots,
-                            infinite_play : data.infinite_play,
-                            play_limit : 0,
-                            winners_percentage : data.winners_percentage,
-                            prize_guaranteed : data.prize_guaranteed,
-                            game_properties : {'pill_ball': data.game_properties}
-                          })
-
-                          if(res){
-                            setLoading(false)
-                          }
-                          console.log(res)
+                          makeTourRequest()
                       }
                       else{
                         Swal.fire({
@@ -182,34 +168,8 @@ const CreateTournaments = () => {
                   else{
                     if( data.start_datetime !== '' &&
                         data.end_datetime !== '' ){
-                          setLoading(true)
-                          const res = await createTournaments({
-                            access_token : 'test',
-                            game_id : data.game_id,
-                            img_splash : data.img_splash,
-                            contest_name : data.contest_name,
-                            recurring : data.recurring,
-                            start_datetime : data.start_datetime,
-                            end_datetime : data.end_datetime,
-                            entry_fee : data.entry_fee,
-                            entry_currency : data.entry_currency,
-                            foreshadow_duration : data.foreshadow_duration,
-                            notification_duration : data.notification_duration,
-                            notification_segments : data.notification_segments,
-                            hardstop_duration : data.hardstop_duration,
-                            winning_currency : data.winning_currency,
-                            slots : data.slots,
-                            infinite_play : data.infinite_play,
-                            play_limit : 0,
-                            winners_percentage : data.winners_percentage,
-                            prize_guaranteed : data.prize_guaranteed,
-                            game_properties : {'pill_ball': data.game_properties}
-                          })
-
-                          if(res){
-                            setLoading(false)
-                          }
-                          console.log(res)
+                         
+                        makeTourRequest()
                     }
                     else{
                       Swal.fire({
@@ -284,13 +244,19 @@ const CreateTournaments = () => {
                 </Grid>
                 
                 <Grid item sm={12} md={6}>
-                  <TextField 
-                    id="game_id" 
-                    label="Game ID" 
-                    fullWidth
-                    value={data.game_id}
-                    onChange={(e) => EnterTextField('game_id',e.target.value)}
-                    variant="outlined" />
+                  <FormControl sx={{ minWidth: '100%' }}>
+                    <InputLabel id="game_id-label">Game ID</InputLabel>
+                    <Select
+                      labelId="game_id-label"
+                      id="game_id"
+                      fullWidth
+                      value={data.game_id}
+                      onChange={(e) => EnterTextField('game_id',e.target.value)} 
+                      label="Game ID" 
+                    >
+                      <MenuItem value='G399920'>G399920</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
 
                 <Grid item sm={12} md={6}>
@@ -537,56 +503,61 @@ const CreateTournaments = () => {
                     </Typography>
                   </Grid>
 
-                  {
-                    prizeMoney.map((item,index) => (
-                      <React.Fragment key={index}>
-                          <Grid item sm={12} md={6}>
-                            <TextField 
-                              id='start_rank'
-                              onChange={e => handleChange(index, e)}
-                              value={item.start_rank}
-                              label="Start Rank" 
-                              fullWidth
-                              variant="outlined" />
-                          </Grid>
-                          <Grid item sm={12} md={6}>
-                            <TextField 
-                              id='end_rank'
-                              onChange={e => handleChange(index, e)}
-                              value={item.end_rank}
-                              label="End Rank" 
-                              fullWidth
-                              variant="outlined" />
-                          </Grid>
-                          <Grid item sm={12} md={6}>
-                            <TextField 
-                              id='cash_money'
-                              onChange={e => handleChange(index, e)}
-                              value={item.cash_money}
-                              label="Cash Money" 
-                              fullWidth
-                              variant="outlined" />
-                          </Grid>
-                          <Grid item sm={12} md={6}>
-                            <TextField 
-                              id='game_token'
-                              onChange={e => handleChange(index, e)}
-                              value={item.game_token}
-                              label="Game Token" 
-                              fullWidth
-                              variant="outlined" />
-                          </Grid>
-                          {
-                            index !== 0 ?
-                            <Grid item xs={12}>
-                              <Button variant='contained' onClick={() => removeFields(index)} color='error'  startIcon={<Delete />}>Remove</Button>
+                  <Grid item xs={12} sx={{ mr: '25px' }}>
+                    <Grid container rowSpacing={2} columnSpacing={2}>
+                      {
+                      prizeMoney.map((item,index) => (
+                        <React.Fragment key={index}>
+                            <Grid item sm={12} md={6} lg={3}>
+                              <TextField 
+                                id='start_rank'
+                                onChange={e => handleChange(index, e)}
+                                value={item.start_rank}
+                                label="Start Rank" 
+                                fullWidth
+                                variant="outlined" />
                             </Grid>
-                            : 
-                            <></>
-                          }  
-                      </React.Fragment>
-                    ))
-                  }
+                            <Grid item sm={12} md={6} lg={3}>
+                              <TextField 
+                                id='end_rank'
+                                onChange={e => handleChange(index, e)}
+                                value={item.end_rank}
+                                label="End Rank" 
+                                fullWidth
+                                variant="outlined" />
+                            </Grid>
+                            <Grid item sm={12} md={6} lg={3}>
+                              <TextField 
+                                id='cash_money'
+                                onChange={e => handleChange(index, e)}
+                                value={item.cash_money}
+                                label="Cash Money" 
+                                fullWidth
+                                variant="outlined" />
+                            </Grid>
+                            <Grid item sm={12} md={6} lg={3}>
+                              <TextField 
+                                id='game_token'
+                                onChange={e => handleChange(index, e)}
+                                value={item.game_token}
+                                label="Game Token" 
+                                fullWidth
+                                variant="outlined" />
+                            </Grid>
+                            {
+                              index !== 0 ?
+                              <Grid item xs={12}>
+                                <Button variant='contained' onClick={() => removeFields(index)} color='error'  startIcon={<Delete />}>Remove</Button>
+                              </Grid>
+                              : 
+                              <></>
+                            }  
+                        </React.Fragment>
+                      ))
+                    }
+                    </Grid>
+                  </Grid>
+                  
                   <Grid item xs={12}>
                     <Button variant='contained' startIcon={<Add />} onClick={addFields}>Add Prize Money</Button>
                   </Grid>   

@@ -1,11 +1,10 @@
 import { Navigate, useRoutes } from 'react-router-dom';
 import Layout from '../layouts';
-import CreateTournaments from '../pages/CreateTournaments';
-import ApiStatus from '../pages/ApiStatus';
+import CreateTournaments from '../pages/Tournaments/CreateTournaments';
 import Dashboard from '../pages/Dashboard';
 import Login from '../pages/Login';
 import Page404 from '../pages/Page404';
-import Tournaments from '../pages/Tournaments';
+import Tournaments from '../pages/Tournaments/Tournaments';
 
 // ----------------------------------------------------------------------
 
@@ -30,10 +29,6 @@ export default function Router() {
         {
           path: 'create-tournaments',
           element: <CreateTournaments />
-        },
-        {
-          path: 'api-status',
-          element: <ApiStatus />
         }
       ],
     },
