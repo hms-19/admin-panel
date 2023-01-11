@@ -45,10 +45,11 @@ const Tournaments = () => {
 
 
     const columns = [
+        { id: 'id', label: 'Id', minWidth: 100 },
         { id: 'game_id', label: 'Game Id', minWidth: 100 },
         { id: 'contest_name', label: 'Contest Name', minWidth: 100 },
         { id: 'entry_fee', label: 'Entry Fee', minWidth: 100 },
-        { id: 'created_at', label: 'Created At', minWidth: 100 },
+        { id: 'createdAt', label: 'Created At', minWidth: 100 },
         {id: 'action', label: 'Action',minWidth: 100}
       ];
 
@@ -57,8 +58,6 @@ const Tournaments = () => {
             access_token : 'test',
             id 
         })
-
-        // console.log(res)
 
         if(res.data.status == 0){
             dispatch(deleteTournament(id))
@@ -74,6 +73,7 @@ const Tournaments = () => {
       const handleAlert = async (id) => {
         Swal.fire({
             title: 'Do you want to delete?',
+            icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Delete',
           }).then((result) => {
@@ -100,15 +100,15 @@ const Tournaments = () => {
       )
 
       
-    function createData(game_id,contest_name,entry_fee,created_at,id) {
-        return {game_id,contest_name,entry_fee,created_at,action: createAction(id) };
+    function createData(id,game_id,contest_name,entry_fee,createdAt) {
+        return {id,game_id,contest_name,entry_fee,createdAt,action: createAction(id) };
     }
 
     let rows = []
     
     if(tournaments.length > 0){
         rows = tournaments.map(tour => (
-            createData(tour.game_id,tour.contest_name,tour.entry_fee,fDateTime(tour.created_at),tour.id)
+            createData(tour.id,tour.game_id,tour.contest_name,tour.entry_fee,fDateTime(tour.createdAt))
         ));
     }
 
@@ -164,7 +164,7 @@ const Tournaments = () => {
                             </Typography>
                             :
                             <Paper sx={{ width: '100%', overflow: 'hidden', marginTop: '24px' }}>
-                                <TableContainer sx={{ maxHeight: 440 }}>
+                                <TableContainer sx={{ maxHeight: 700 }}>
                                     <Table stickyHeader aria-label="sticky table">
                                     <TableHead>
                                         <TableRow>
