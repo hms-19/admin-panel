@@ -13,10 +13,11 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchTournaments } from '../../endpoints/tournaments'
-import { getTournaments, setAllTournaments } from '../../features/tournaments/tournamentSlice'
+import { deleteTournaments, fetchTournaments } from '../../endpoints/tournaments'
+import { deleteTournament, getTournaments, setAllTournaments } from '../../features/tournaments/tournamentSlice'
 import Loader from "react-js-loader";
 import { fDateTime } from '../../utils/formatTime'
+import Swal from 'sweetalert2'
 
 
 const Tournaments = () => {
@@ -51,6 +52,37 @@ const Tournaments = () => {
         {id: 'action', label: 'Action',minWidth: 100}
       ];
 
+      const removeTournament = async (id) => {
+        const res = await deleteTournaments({
+            access_token : 'test',
+            id 
+        })
+
+        // console.log(res)
+
+        if(res.data.status == 0){
+            dispatch(deleteTournament(id))
+            Swal.fire({
+                title: 'Success!',
+                text: 'Tournament Deleted Successfully !',
+                icon: 'success',
+                confirmButtonText: 'OK'
+              })
+        }
+      }
+
+      const handleAlert = async (id) => {
+        Swal.fire({
+            title: 'Do you want to delete?',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              removeTournament(id)
+            } 
+          })
+      }
+
       const createAction = (id) => (
         <>
             <Stack direction="row" spacing={2}>
@@ -60,7 +92,7 @@ const Tournaments = () => {
                 <IconButton>
                     <Edit />
                 </IconButton>
-                <IconButton>
+                <IconButton onClick={() => handleAlert(id)}>
                     <Delete />
                 </IconButton>
             </Stack>

@@ -1,6 +1,6 @@
 import { Button, Card, CardContent, CardHeader, FormControl, FormControlLabel, FormGroup, Grid, InputLabel, MenuItem, Select, Switch, TextField, Typography } from '@mui/material'
 import { Container } from '@mui/system'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -21,23 +21,23 @@ const CreateTournaments = () => {
     img_splash : '',
     contest_name : '',
     recurring : false,
-    recurring_duration : 0,
-    recurring_interval : 0,
+    recurring_duration : '',
+    recurring_interval : '',
     blackout_start : dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ').toString(),
     blackout_end : dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ').toString(),
     start_datetime : dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ').toString(),
     end_datetime : dayjs(new Date()).format('YYYY-MM-DDTHH:mm:ssZ').toString(),
-    entry_fee : 0,
-    entry_currency : 0,
-    foreshadow_duration : 0,
-    notification_duration : 0,
-    notification_segments : 0,
-    hardstop_duration : 0,
-    winning_currency : 0,
-    slots : 0,
+    entry_fee : '',
+    entry_currency : '',
+    foreshadow_duration : '',
+    notification_duration : '',
+    notification_segments : '',
+    hardstop_duration : '',
+    winning_currency : '',
+    slots : '',
     infinite_play : false,
-    play_limit : 0,
-    winners_percentage : 0,
+    play_limit : '',
+    winners_percentage : '',
     prize_guaranteed : false,
     game_properties : ''
   })
@@ -46,6 +46,15 @@ const CreateTournaments = () => {
 
   const [prizeMoney, setPrizeMoney] = useState([
     {start_rank: '', end_rank: '', cash_money: '', game_token: ''}
+  ])
+
+  const [games, setGames] = useState([
+    {
+      id : 'GM001',
+      property: {
+        ball_hit_rate: 75
+      }
+    }
   ])
 
   // change image to base64
@@ -84,10 +93,18 @@ const CreateTournaments = () => {
   const EnterTextField = (key, value) => {
     setData({...data, [key]: value})
   }
+  
+
+  //change game properties
+  useEffect(() => {
+    let prop = games.filter(game => game.id == data.game_id)
+    prop = prop[0]
+    EnterTextField('game_properties',prop?.property)
+  },[data.game_id])
+  
 
   // request to create
   const makeTourRequest = async () => {
-    alert()
     setLoading(true)
     const res = await createTournaments({
       access_token: 'test',
@@ -95,7 +112,9 @@ const CreateTournaments = () => {
       prizeMoney
     })
 
-    if(res?.status !== 0){
+    // console.log(res)
+
+    if(res.code !== 0){
       setLoading(false)
       Swal.fire({
         title: 'Warning!',
@@ -104,8 +123,18 @@ const CreateTournaments = () => {
         confirmButtonText: 'OK'
       })
     }
-    setLoading(false)
-    console.log(res)
+
+    setData(cleanTourForm(data))
+    setPrizeMoney([
+      {start_rank: '', end_rank: '', cash_money: '', game_token: ''}
+    ])
+    Swal.fire({
+      title: 'Success!',
+      text: 'Tournament created successfully !',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    })
+    
   }
 
   // handle submit
@@ -117,22 +146,23 @@ const CreateTournaments = () => {
       setPrizeMoney([
         {start_rank: '', end_rank: '', cash_money: '', game_token: ''}
       ])
+      setLoading(false)
     }
 
     //form submit
     if(type == 'submit'){
-
+        // console.log(data)
         // all field check
         if(
             data.game_id !== '' && 
             data.img_splash !== '' &&
             data.contest_name !== '' &&
-            data.entry_fee !== 0 && data.entry_fee !== '' &&
-            data.foreshadow_duration !== 0 && data.foreshadow_duration !== '' &&
-            data.notification_duration !== 0 && data.notification_duration !== '' &&
-            data.hardstop_duration !== 0 && data.hardstop_duration !== '' &&
-            data.slots !== 0 && data.slots !== '' &&
-            data.winners_percentage !== 0 && data.winners_percentage !== '' &&
+            data.entry_fee !== '' &&
+            data.foreshadow_duration !== '' &&
+            data.notification_duration !== '' &&
+            data.hardstop_duration !== '' &&
+            data.slots !== '' &&
+            data.winners_percentage !== '' &&
             data.game_properties !== '' &&
             prizeMoney.length !== 0 
           ){
@@ -145,12 +175,12 @@ const CreateTournaments = () => {
 
               // infinite check
               if(!data.infinite_play){
-                if(data.play_limit !== 0 && data.play_limit !== ''){
+                if(data.play_limit !== ''){
 
                   //recurring check
                   if(data.recurring){
-                    if( data.recurring_duration !== 0 && data.recurring_duration !== '' &&
-                        data.recurring_interval !== 0 && data.recurring_interval !== '' &&
+                    if( data.recurring_duration !== '' &&
+                        data.recurring_interval !== '' &&
                         data.blackout_start !== '' &&
                         data.blackout_end !== '' 
                       ){
@@ -254,7 +284,11 @@ const CreateTournaments = () => {
                       onChange={(e) => EnterTextField('game_id',e.target.value)} 
                       label="Game ID" 
                     >
-                      <MenuItem value='G399920'>G399920</MenuItem>
+                      {
+                        games.map(game => (
+                          <MenuItem key={game.id} value={game.id}>{game.id}</MenuItem>
+                        ))
+                      }
                     </Select>
                   </FormControl>
                 </Grid>
@@ -364,6 +398,7 @@ const CreateTournaments = () => {
                     id="entry_fee" 
                     label="Entry Fee" 
                     fullWidth
+                    type='number'
                     value={data.entry_fee}
                     onChange={(e) => EnterTextField('entry_fee',e.target.value)} 
                     variant="outlined" />
@@ -391,6 +426,7 @@ const CreateTournaments = () => {
                     id="foreshadow_duration" 
                     label="Foreshadow Duration" 
                     fullWidth
+                    type='number'
                     value={data.foreshadow_duration}
                     onChange={(e) => EnterTextField('foreshadow_duration',e.target.value)} 
                     variant="outlined" />
@@ -401,6 +437,7 @@ const CreateTournaments = () => {
                     id="notification_duration" 
                     label="Notification Duration" 
                     fullWidth
+                    type='number'
                     value={data.notification_duration}
                     onChange={(e) => EnterTextField('notification_duration',e.target.value)} 
                     variant="outlined" />
@@ -428,6 +465,7 @@ const CreateTournaments = () => {
                     id="hardstop_duration" 
                     label="Hardstop Duration" 
                     fullWidth
+                    type='number'
                     value={data.hardstop_duration}
                     onChange={(e) => EnterTextField('hardstop_duration',e.target.value)} 
                     variant="outlined" />
@@ -455,6 +493,7 @@ const CreateTournaments = () => {
                     id="slots" 
                     label="Slots" 
                     fullWidth
+                    type='number'
                     value={data.slots}
                     onChange={(e) => EnterTextField('slots',e.target.value)}
                     variant="outlined" />
@@ -475,6 +514,7 @@ const CreateTournaments = () => {
                       id="play_limit" 
                       label="Play Limit" 
                       fullWidth
+                      type='number'
                       value={data.play_limit}
                       onChange={(e) => EnterTextField('play_limit',e.target.value)}
                       variant="outlined" />
@@ -486,6 +526,7 @@ const CreateTournaments = () => {
                       id="winners_percentage" 
                       label="Winners Percentage" 
                       fullWidth
+                      type='number'
                       value={data.winners_percentage}
                       onChange={(e) => EnterTextField('winners_percentage',e.target.value)}
                       variant="outlined" />
@@ -514,7 +555,7 @@ const CreateTournaments = () => {
                                 onChange={e => handleChange(index, e)}
                                 value={item.start_rank}
                                 label="Start Rank" 
-                                fullWidth
+                                        fullWidth
                                 variant="outlined" />
                             </Grid>
                             <Grid item sm={12} md={6} lg={3}>
@@ -524,7 +565,7 @@ const CreateTournaments = () => {
                                 value={item.end_rank}
                                 label="End Rank" 
                                 fullWidth
-                                variant="outlined" />
+                                        variant="outlined" />
                             </Grid>
                             <Grid item sm={12} md={6} lg={3}>
                               <TextField 
@@ -533,7 +574,7 @@ const CreateTournaments = () => {
                                 value={item.cash_money}
                                 label="Cash Money" 
                                 fullWidth
-                                variant="outlined" />
+                                        variant="outlined" />
                             </Grid>
                             <Grid item sm={12} md={6} lg={3}>
                               <TextField 
@@ -542,7 +583,7 @@ const CreateTournaments = () => {
                                 value={item.game_token}
                                 label="Game Token" 
                                 fullWidth
-                                variant="outlined" />
+                                        variant="outlined" />
                             </Grid>
                             {
                               index !== 0 ?
@@ -567,13 +608,17 @@ const CreateTournaments = () => {
                       id='game_properties'
                       label="Game Properties" 
                       fullWidth
-                      value={data.game_properties}
-                      onChange={(e) => EnterTextField('game_properties',e.target.value)}
+                      disabled
+                      value={JSON.stringify(data.game_properties)}
                       variant="outlined" />
                   </Grid>  
                   <Grid item xs={12}>
-                    <Button variant='contained' startIcon={<Add />} sx={{ float: 'right' }} onClick={() => handleFormSubmit('submit')}>Create</Button>
-                    <Button variant='contained' color='warning' startIcon={<ClearAll />} sx={{ float: 'right', m: '0 10px' }} onClick={() => handleFormSubmit('cancel')}>Cancel</Button>
+                    {
+                      loading ? <Button variant='contained' startIcon={<Add />} sx={{ float: 'right' }} disabled>Create</Button>
+                      : 
+                      <Button variant='contained' startIcon={<Add />} sx={{ float: 'right' }} onClick={() => handleFormSubmit('submit')}>Create</Button>
+                    }
+                    <Button variant='contained' color='warning' startIcon={<ClearAll />} sx={{ float: 'right', m: '0 10px' }} onClick={() => handleFormSubmit('cancel')}>Clear</Button>
                   </Grid>           
               </Grid>
             </CardContent>
